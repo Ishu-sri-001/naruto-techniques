@@ -1,26 +1,83 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0b0c0f;
+  --foreground: #ede8df;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-ink: #0b0c0f;
+  
+  --color-panel: #141519;
+  --color-bone: #ede8df;
+  
+  --color-muted: #94908a;
+  --color-chakra: #4f9dff;
+  --color-hanko: #c1272d;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: var(--font-noto-serif-jp);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Jutsu seal ring — signature hero element. Two rings drift at different
+   speeds, like chakra circling a gathering point, and settle to a static
+   frame for anyone who has asked their system to reduce motion. */
+@keyframes seal-spin-cw {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes seal-spin-ccw {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.seal-ring-outer {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: seal-spin-cw 160s linear infinite;
+}
+
+.seal-ring-middle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: seal-spin-ccw 110s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seal-ring-outer,
+  .seal-ring-middle {
+    animation: none;
+  }
+}
+
+/* Badge for the final "watch it happen" step — a soft chakra pulse to mark
+   the moment the technique actually releases. */
+@keyframes step-badge-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(79, 157, 255, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(79, 157, 255, 0);
+  }
+}
+
+.step-badge-glow {
+  animation: step-badge-pulse 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-badge-glow {
+    animation: none;
+  }
 }
