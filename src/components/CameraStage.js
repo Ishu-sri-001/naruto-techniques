@@ -15,6 +15,12 @@ const GESTURES = [shadowCloneGesture, rasenganGesture];
 function drawHud(ctx, width, height, { holding, holdingLabel, progress, lastTrigger, now }) {
   ctx.save();
 
+  // The canvas is displayed through a parent CSS scaleX(-1) mirror (selfie
+  // view), which would flip HUD text backwards. Pre-mirror here so the two
+  // flips cancel and text reads normally on screen.
+  ctx.translate(width, 0);
+  ctx.scale(-1, 1);
+
   if (holding) {
     const barWidth = width * 0.34;
     const barHeight = Math.max(10, height * 0.018);
