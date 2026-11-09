@@ -1,34 +1,256 @@
 @import "tailwindcss";
 
+/* ============================================================
+   NARUTO TECHNIQUES — DESIGN SYSTEM
+   ------------------------------------------------------------
+   Single source of truth for type and color. Use the classes,
+   not raw values — they all work with max-md: / max-sm:.
+
+     TYPE   .h1   hero title                  Archivo
+            .h2   every section heading       Archivo
+            .h3   steps, cards, row titles    Geist
+            .p-lg lead paragraph              Geist
+            .p-md default copy, buttons, nav  Geist
+            .p-sm captions, labels, footer    Geist
+            Size, face, weight and line-height live in the class.
+            Colour never does — add a colour class beside it.
+            Weight is always 400. No bold without sign-off.
+     COLOR  bg-/text-/border- + ink, cream, chakra, hanko, muted,
+            surface, rule
+            ink (ground) · cream (type) — the two theme colors
+            chakra (accent) · hanko (seal red)
+            ember · sakura · dusk · smoke — the Konoha footer
+     FONTS  font-display (Archivo) · font-body (Geist)
+            font-mono (Geist Mono) · font-kanji (Noto Serif JP)
+
+   Sizes scale in vw, clamped so they stay readable on phones and
+   stop growing past a large desktop. Never hand-write a font-size
+   in a component — change a step here instead.
+   ============================================================ */
 :root {
-  --background: #0b0c0f;
-  --foreground: #ede8df;
+  /* ---------- Palette ----------
+     The only hex values in the UI. Every other shade is mixed from
+     these below, so a palette change is a short edit.             */
+  --ink: #11110d; /* theme — page ground, dark sections */
+  --cream: #f1e7cf; /* theme — type, light marks */
+  --chakra: #4f9dff; /* accent — chakra blue */
+  --hanko: #c1272d; /* accent — seal-stamp red */
+  --bronze: #a8773a; /* accent — scroll metalwork */
+  --ember: #f08a3c; /* accent — sunset fire, the Konoha glow */
+  --sakura: #f3b9c6; /* accent — drifting petals */
+
+  /* ---------- Derived shades (mixes, not new colors) ---------- */
+  --ink-soft: color-mix(in srgb, var(--ink) 92%, var(--cream));
+  --hanko-soft: color-mix(in srgb, var(--hanko) 70%, var(--cream));
+  --hanko-deep: color-mix(in srgb, var(--hanko) 55%, var(--ink)); /* scroll rollers */
+  --cream-deep: color-mix(in srgb, var(--cream) 78%, var(--ink)); /* parchment edges */
+  --bronze-deep: color-mix(in srgb, var(--bronze) 55%, var(--ink));
+  --bronze-light: color-mix(in srgb, var(--bronze) 55%, var(--cream));
+  --parchment: color-mix(in srgb, var(--cream) 85%, var(--bronze));
+  /* footer ground — near-black with a breath of seal red, matched to the
+     shadowed foot of the Konoha panorama so the two blend */
+  --dusk: color-mix(in srgb, var(--hanko) 6%, color-mix(in srgb, var(--ink) 75%, black));
+  --smoke: color-mix(in srgb, var(--cream) 35%, var(--ink)); /* jutsu smoke */
+
+  /* ---------- Semantic color roles ----------
+     background = ink, the page ground
+     foreground = cream, all type
+     surface    = ink-soft, panels and cards
+     accent     = chakra, the one cool highlight
+     muted      = de-emphasised copy (4.5:1 on ink)
+     rule       = hairlines and dividers                     */
+  --background: var(--ink);
+  --foreground: var(--cream);
+  --surface: var(--ink-soft);
+  --accent: var(--chakra);
+  --muted: color-mix(in srgb, var(--cream) 62%, var(--ink));
+  --rule: color-mix(in srgb, var(--cream) 12%, transparent);
+
+  /* ---------- Type scale (vw-based) ----------
+     min          preferred      max        ≈px @1440 */
+  --fs-12: clamp(0.68rem, 0.8vw, 0.8rem); /* p-sm */
+  --fs-16: clamp(0.88rem, 1.1vw, 1.1rem); /* p-md */
+  --fs-20: clamp(1rem, 1.4vw, 1.4rem); /* p-lg */
+  --fs-32: clamp(1.5rem, 1.8vw, 2.4rem); /* h3 */
+  --fs-56: clamp(2.4rem, 3.9vw, 4.4rem); /* h2 */
+  --fs-100: clamp(3.2rem, 7vw, 8rem); /* h1 */
+
+  /* ---------- Line heights ---------- */
+  --lh-tight: 0.95;
+  --lh-snug: 1.15;
+  --lh-body: 1.55;
+}
+
+/* Mobile (< 768px): paragraphs, h2 and h1 step up a little so
+   everything stays comfortable to read. h3 keeps its own token. */
+@media (width < 768px) {
+  :root {
+    --fs-12: clamp(0.8rem, 3.4vw, 0.9rem); /* p-sm */
+    --fs-16: clamp(1rem, 4.2vw, 1.2rem); /* p-md */
+    --fs-20: clamp(1.2rem, 5vw, 1.4rem); /* p-lg */
+    --fs-56: clamp(2.7rem, 11vw, 3.4rem); /* h2 */
+    --fs-100: clamp(3.5rem, 15vw, 4.6rem); /* h1 */
+  }
+}
+
+/* Fonts wired by next/font in layout.js. `static` so the variables are always
+   emitted — the type classes below read them directly. */
+@theme static {
+  --font-display: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+  --font-body: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-kanji: var(--font-noto-serif-jp), serif;
 }
 
 @theme inline {
+  /* colors — semantic roles, then the palette by name */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-ink: #0b0c0f;
-  
-  --color-panel: #141519;
-  --color-bone: #ede8df;
-  
-  --color-muted: #94908a;
-  --color-chakra: #4f9dff;
-  --color-hanko: #c1272d;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-noto-serif-jp);
+  --color-surface: var(--surface);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-cream: var(--cream);
+  --color-chakra: var(--chakra);
+  --color-hanko: var(--hanko);
+  --color-hanko-soft: var(--hanko-soft);
+  --color-hanko-deep: var(--hanko-deep);
+  --color-cream-deep: var(--cream-deep);
+  --color-bronze: var(--bronze);
+  --color-bronze-deep: var(--bronze-deep);
+  --color-bronze-light: var(--bronze-light);
+  --color-parchment: var(--parchment);
+  --color-ember: var(--ember);
+  --color-sakura: var(--sakura);
+  --color-dusk: var(--dusk);
+  --color-smoke: var(--smoke);
+
+  /* responsive breakpoints — desktop-first, two only.
+     max-md: tablet (< 1025px) · max-sm: mobile (< 768px) */
+  --breakpoint-md: 1025px;
+  --breakpoint-sm: 768px;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-body);
+  font-size: var(--fs-16);
+  line-height: var(--lh-body);
+  font-weight: 400;
 }
 
-/* Jutsu seal ring — signature hero element. Two rings drift at different
-   speeds, like chakra circling a gathering point, and settle to a static
-   frame for anyone who has asked their system to reduce motion. */
+/* ============================================================
+   TYPE — six classes, nothing else sets a font size.
+   `@utility` so every one works with max-md: / max-sm: and inside
+   template literals. Weight is always 400. Colour is never set here.
+   ============================================================ */
+/* h1 — one per page: the hero title */
+@utility h1 {
+  font-family: var(--font-display);
+  font-size: var(--fs-100);
+  font-weight: 400;
+  line-height: 0.9;
+}
+
+/* h2 — every section heading */
+@utility h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-56);
+  font-weight: 400;
+  line-height: var(--lh-snug);
+}
+
+/* h3 — steps, technique cards, row titles */
+@utility h3 {
+  font-family: var(--font-body);
+  font-size: var(--fs-32);
+  font-weight: 400;
+  line-height: var(--lh-snug);
+}
+
+/* p-lg — the lead sentence under a heading */
+@utility p-lg {
+  font-family: var(--font-body);
+  font-size: var(--fs-20);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* p-md — default copy, and every button, nav link and text CTA */
+@utility p-md {
+  font-family: var(--font-body);
+  font-size: var(--fs-16);
+  font-weight: 400;
+  line-height: var(--lh-body);
+}
+
+/* p-sm — captions, labels, ranks, status, footer */
+@utility p-sm {
+  font-family: var(--font-body);
+  font-size: var(--fs-12);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* Paper grain — fractal noise for parchment surfaces. Pair with a
+   background colour and bg-blend-multiply. */
+@utility paper-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='120'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.02 0.05' numOctaves='3' seed='4'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)' opacity='0.35'/%3E%3C/svg%3E");
+}
+
+/* Scroll-triggered text reveals (driver: components/animations/TextReveal).
+   Headings with `ink` ink in; paragraphs with `lines-up` rise line by line
+   from behind a mask. They start hidden here so nothing flashes before the
+   driver runs; reduced motion leaves them visible. */
+@media (prefers-reduced-motion: no-preference) {
+  .ink:not(.ink-done),
+  .ink:not(.ink-done) * {
+    -webkit-text-fill-color: transparent;
+  }
+  .lines-up:not(.lines-done) {
+    visibility: hidden;
+  }
+}
+
+/* Notched plaque outline: a small square cut from each corner. Set
+   --notch to size the cut. Insetting a layer and re-applying `notched`
+   keeps its outline parallel to the one outside it. */
+@utility notched {
+  clip-path: polygon(
+    var(--notch, 0.4rem) 0,
+    calc(100% - var(--notch, 0.4rem)) 0,
+    calc(100% - var(--notch, 0.4rem)) var(--notch, 0.4rem),
+    100% var(--notch, 0.4rem),
+    100% calc(100% - var(--notch, 0.4rem)),
+    calc(100% - var(--notch, 0.4rem)) calc(100% - var(--notch, 0.4rem)),
+    calc(100% - var(--notch, 0.4rem)) 100%,
+    var(--notch, 0.4rem) 100%,
+    var(--notch, 0.4rem) calc(100% - var(--notch, 0.4rem)),
+    0 calc(100% - var(--notch, 0.4rem)),
+    0 var(--notch, 0.4rem),
+    var(--notch, 0.4rem) var(--notch, 0.4rem)
+  );
+}
+
+/* Paper seal on an unbuilt technique's scroll — a small flutter on hover. */
+@keyframes tag-flutter {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+/* Jutsu seal ring — two rings drift at different speeds, like chakra
+   circling a gathering point, and settle to a static frame for anyone
+   who has asked their system to reduce motion. */
 @keyframes seal-spin-cw {
   to {
     transform: rotate(360deg);
@@ -65,10 +287,10 @@ body {
 @keyframes step-badge-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(79, 157, 255, 0.35);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--chakra) 35%, transparent);
   }
   50% {
-    box-shadow: 0 0 0 6px rgba(79, 157, 255, 0);
+    box-shadow: 0 0 0 0.4rem color-mix(in srgb, var(--chakra) 0%, transparent);
   }
 }
 
@@ -80,4 +302,221 @@ body {
   .step-badge-glow {
     animation: none;
   }
+}
+
+/* ============================================================
+   KONOHA FOOTER
+   ============================================================ */
+
+/* Footer nav — red chakra flares around the word on hover, and a
+   charged line draws in beneath it. */
+@keyframes chakra-flicker {
+  0%,
+  100% {
+    text-shadow:
+      0 0 0.3em var(--hanko),
+      0 0 0.9em color-mix(in srgb, var(--hanko) 70%, transparent);
+  }
+  50% {
+    text-shadow:
+      0 0 0.4em var(--hanko),
+      0 0 1.4em var(--hanko),
+      0 0 2.4em color-mix(in srgb, var(--hanko) 50%, transparent);
+  }
+}
+
+.chakra-link {
+  position: relative;
+  transition:
+    color 0.3s ease,
+    text-shadow 0.3s ease;
+}
+
+.chakra-link::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -0.2em;
+  height: 0.1em;
+  border-radius: 1em;
+  background: var(--hanko);
+  box-shadow: 0 0 0.6em 0.1em var(--hanko);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.chakra-link:hover,
+.chakra-link:focus-visible {
+  color: var(--cream);
+  animation: chakra-flicker 1.4s ease-in-out infinite;
+}
+
+.chakra-link:hover::after,
+.chakra-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Social icons take the same chakra as a drop-shadow halo. */
+.chakra-icon {
+  transition:
+    color 0.3s ease,
+    filter 0.3s ease,
+    transform 0.3s ease;
+}
+
+.chakra-icon:hover,
+.chakra-icon:focus-visible {
+  color: var(--hanko-soft);
+  filter: drop-shadow(0 0 0.3em var(--hanko)) drop-shadow(0 0 0.9em var(--hanko));
+  transform: translateY(-0.1em);
+}
+
+/* Back to top — an ember-lit Konoha seal. The halo breathes, the two
+   flame rings drift against each other. */
+@keyframes ember-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 1.4vw 0.2vw color-mix(in srgb, var(--ember) 30%, transparent),
+      inset 0 0 1vw color-mix(in srgb, var(--hanko) 45%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 2.6vw 0.6vw color-mix(in srgb, var(--ember) 45%, transparent),
+      inset 0 0 1.4vw color-mix(in srgb, var(--hanko) 70%, transparent);
+  }
+}
+
+.ember-pulse {
+  animation: ember-pulse 2.8s ease-in-out infinite;
+  transition: filter 0.4s ease;
+}
+
+.group:hover .ember-pulse,
+.group:focus-visible .ember-pulse {
+  filter: brightness(1.5);
+}
+
+.ember-glow {
+  filter: drop-shadow(0 0 0.4vw var(--ember))
+    drop-shadow(0 0 1.2vw color-mix(in srgb, var(--hanko) 70%, transparent));
+}
+
+.fire-ring {
+  animation: seal-spin-cw 14s linear infinite;
+}
+
+.fire-ring-rev {
+  animation: seal-spin-ccw 22s linear infinite;
+}
+
+@media (width < 768px) {
+  @keyframes ember-pulse {
+    0%,
+    100% {
+      box-shadow:
+        0 0 4vw 0.6vw color-mix(in srgb, var(--ember) 30%, transparent),
+        inset 0 0 3vw color-mix(in srgb, var(--hanko) 45%, transparent);
+    }
+    50% {
+      box-shadow:
+        0 0 7vw 1.6vw color-mix(in srgb, var(--ember) 45%, transparent),
+        inset 0 0 4vw color-mix(in srgb, var(--hanko) 70%, transparent);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chakra-link:hover,
+  .chakra-link:focus-visible,
+  .ember-pulse,
+  .fire-ring,
+  .fire-ring-rev {
+    animation: none;
+  }
+}
+
+/* Katon burst fired by Back to top (driver: lib/fire-burst). Particles
+   are built in JS, positioned with GSAP transforms, and sized from the
+   button, so only their look lives here. */
+.fx-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.fx-layer > span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.fx-layer > .fx-heat {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at var(--fx-x) var(--fx-y),
+    color-mix(in srgb, var(--ember) 55%, transparent),
+    color-mix(in srgb, var(--hanko) 20%, transparent) 30%,
+    transparent 60%
+  );
+  mix-blend-mode: screen;
+}
+
+.fx-flame {
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  background: radial-gradient(
+    ellipse at 50% 68%,
+    var(--cream) 0%,
+    var(--ember) 28%,
+    var(--hanko) 58%,
+    transparent 72%
+  );
+  mix-blend-mode: screen;
+  filter: blur(0.2vw);
+}
+
+.fx-orb {
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--cream) 0%,
+    var(--ember) 30%,
+    color-mix(in srgb, var(--hanko) 70%, transparent) 55%,
+    transparent 72%
+  );
+  box-shadow: 0 0 3vw 1vw color-mix(in srgb, var(--ember) 40%, transparent);
+  mix-blend-mode: screen;
+}
+
+.fx-spark {
+  border-radius: 50%;
+  background: var(--cream);
+  box-shadow: 0 0 0.4vw 0.1vw var(--ember);
+}
+
+.fx-ring {
+  border-radius: 50%;
+  border: 0.3vw solid var(--ember);
+  box-shadow:
+    0 0 2vw var(--ember),
+    inset 0 0 1.6vw var(--hanko);
+  mix-blend-mode: screen;
+}
+
+.fx-smoke {
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--smoke) 85%, transparent) 0%,
+    color-mix(in srgb, var(--smoke) 40%, transparent) 45%,
+    transparent 70%
+  );
+  filter: blur(0.5vw);
 }

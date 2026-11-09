@@ -1,5 +1,7 @@
-import { Geist, Geist_Mono, Noto_Serif_JP } from "next/font/google";
+import { Archivo, Geist, Geist_Mono, Noto_Serif_JP } from "next/font/google";
 import "./globals.css";
+import SmoothScroll from "@/components/layout/SmoothScroll";
+import TextReveal from "@/components/animations/TextReveal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -9,6 +11,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const archivo = Archivo({
+  variable: "--font-archivo",
+  subsets: ["latin"],
+  axes: ["wdth"],
 });
 
 const notoSerifJP = Noto_Serif_JP({
@@ -26,9 +34,13 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${notoSerifJP.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${notoSerifJP.variable} ${archivo.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <SmoothScroll />
+        <TextReveal />
+        {children}
+      </body>
     </html>
   );
 }

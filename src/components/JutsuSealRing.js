@@ -31,9 +31,9 @@ export default function JutsuSealRing({ className }) {
     >
       <defs>
         <radialGradient id="chakraCore" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#4f9dff" stopOpacity="0.45" />
-          <stop offset="60%" stopColor="#4f9dff" stopOpacity="0.12" />
-          <stop offset="100%" stopColor="#4f9dff" stopOpacity="0" />
+          <stop offset="0%" stopColor="var(--color-chakra)" stopOpacity="0.45" />
+          <stop offset="60%" stopColor="var(--color-chakra)" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="var(--color-chakra)" stopOpacity="0" />
         </radialGradient>
       </defs>
 
@@ -41,7 +41,7 @@ export default function JutsuSealRing({ className }) {
 
       {/* outer reticle ring, tracking-style tick marks */}
       <g className="seal-ring-outer">
-        <circle cx="200" cy="200" r="188" fill="none" stroke="#4f9dff" strokeOpacity="0.35" strokeWidth="1" />
+        <circle cx="200" cy="200" r="188" fill="none" stroke="var(--color-chakra)" strokeOpacity="0.35" strokeWidth="1" />
         {TICKS.map((angle) => {
           const outer = polar(188, angle);
           const inner = polar(angle % 90 === 0 ? 172 : 180, angle);
@@ -52,7 +52,7 @@ export default function JutsuSealRing({ className }) {
               y1={inner.y}
               x2={outer.x}
               y2={outer.y}
-              stroke="#4f9dff"
+              stroke="var(--color-chakra)"
               strokeOpacity={angle % 90 === 0 ? 0.75 : 0.35}
               strokeWidth={angle % 90 === 0 ? 1.5 : 1}
             />
@@ -67,7 +67,7 @@ export default function JutsuSealRing({ className }) {
           cy="200"
           r="150"
           fill="none"
-          stroke="#ede8df"
+          stroke="var(--color-cream)"
           strokeOpacity="0.18"
           strokeWidth="1"
           strokeDasharray="2 6"
@@ -81,9 +81,9 @@ export default function JutsuSealRing({ className }) {
               y={y}
               textAnchor="middle"
               dominantBaseline="central"
-              fontFamily="var(--font-display)"
+              fontFamily="var(--font-kanji)"
               fontSize="20"
-              fill="#ede8df"
+              fill="var(--color-cream)"
               fillOpacity="0.65"
             >
               {char}
@@ -93,8 +93,8 @@ export default function JutsuSealRing({ className }) {
       </g>
 
       {/* inner ring, static */}
-      <circle cx="200" cy="200" r="108" fill="none" stroke="#4f9dff" strokeOpacity="0.55" strokeWidth="1.5" />
-      <circle cx="200" cy="200" r="4" fill="#ede8df" />
+      <circle cx="200" cy="200" r="108" fill="none" stroke="var(--color-chakra)" strokeOpacity="0.55" strokeWidth="1.5" />
+      <circle cx="200" cy="200" r="4" fill="var(--color-cream)" />
     </svg>
   );
 }

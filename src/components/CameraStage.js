@@ -12,7 +12,14 @@ import HandSealDiagram from "@/components/HandSealDiagram";
 
 const GESTURES = [shadowCloneGesture, rasenganGesture];
 
-function drawHud(ctx, width, height, { holding, holdingLabel, progress, lastTrigger, now }) {
+// Theme colors come from the CSS variables in globals.css.
+function readTheme() {
+  const css = getComputedStyle(document.documentElement);
+  const get = (name) => css.getPropertyValue(name).trim();
+  return { ink: get("--ink"), cream: get("--cream"), chakra: get("--chakra") };
+}
+
+function drawHud(ctx, width, height, { holding, holdingLabel, progress, lastTrigger, now, theme }) {
   ctx.save();
 
   // The canvas is displayed through a parent CSS scaleX(-1) mirror (selfie
@@ -26,24 +33,29 @@ function drawHud(ctx, width, height, { holding, holdingLabel, progress, lastTrig
     const barHeight = Math.max(10, height * 0.018);
     const x = (width - barWidth) / 2;
     const y = height * 0.74;
-    ctx.fillStyle = "rgba(10, 10, 10, 0.45)";
+    ctx.globalAlpha = 0.45;
+    ctx.fillStyle = theme.ink;
     ctx.fillRect(x, y, barWidth, barHeight);
-    ctx.fillStyle = "rgba(255, 150, 40, 0.95)";
+    ctx.globalAlpha = 0.95;
+    ctx.fillStyle = theme.chakra;
     ctx.fillRect(x, y, barWidth * Math.min(progress, 1), barHeight);
-    ctx.font = `${Math.round(height * 0.022)}px sans-serif`;
-    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.font = `400 ${Math.round(height * 0.022)}px sans-serif`;
+    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = theme.cream;
     ctx.textAlign = "center";
     ctx.fillText(holdingLabel || "Holding…", width / 2, y - height * 0.015);
+    ctx.globalAlpha = 1;
   }
 
   const sinceTrigger = now - lastTrigger.at;
   if (sinceTrigger < 2200) {
     const alpha = sinceTrigger < 1600 ? 1 : Math.max(0, 1 - (sinceTrigger - 1600) / 600);
     ctx.textAlign = "center";
-    ctx.font = `bold ${Math.round(height * 0.05)}px sans-serif`;
+    ctx.font = `400 ${Math.round(height * 0.05)}px sans-serif`;
     ctx.lineWidth = Math.max(2, height * 0.004);
-    ctx.strokeStyle = `rgba(30, 20, 0, ${alpha})`;
-    ctx.fillStyle = `rgba(255, 210, 90, ${alpha})`;
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = theme.ink;
+    ctx.fillStyle = theme.cream;
     ctx.strokeText(lastTrigger.name, width / 2, height * 0.12);
     ctx.fillText(lastTrigger.name, width / 2, height * 0.12);
   }
@@ -67,6 +79,7 @@ export default function CameraStage() {
     const shadowCloneEffect = new ShadowCloneEffect();
     const rasenganEffect = new RasenganEffect();
     const lastTrigger = { name: "", at: -Infinity };
+    const theme = readTheme();
 
     async function start() {
       setStatus("requesting");
@@ -140,7 +153,7 @@ export default function CameraStage() {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           shadowCloneEffect.render(ctx, canvas.width, canvas.height, now);
           rasenganEffect.render(ctx, canvas.width, canvas.height, now);
-          drawHud(ctx, canvas.width, canvas.height, { holding, holdingLabel, progress, lastTrigger, now });
+          drawHud(ctx, canvas.width, canvas.height, { holding, holdingLabel, progress, lastTrigger, now, theme });
         }
 
         rafId = requestAnimationFrame(loop);
@@ -160,7 +173,7 @@ export default function CameraStage() {
   }, []);
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-black">
+    <div className="fixed inset-0 overflow-hidden bg-ink">
       {/* Camera feed + tracking overlay, mirrored together for a natural selfie view */}
       <div className="absolute inset-0" style={{ transform: "scaleX(-1)" }}>
         <video ref={videoRef} playsInline muted className="absolute inset-0 h-full w-full object-cover" />
@@ -170,44 +183,44 @@ export default function CameraStage() {
       {/* Chrome overlay — not mirrored, sits above the camera */}
       <Link
         href="/"
-        className="absolute left-4 top-4 z-20 rounded-full bg-black/50 px-4 py-2 text-sm font-medium text-zinc-100 backdrop-blur-sm transition-colors hover:bg-black/70 sm:left-6 sm:top-6"
+        className="p-md absolute left-6 top-6 z-20 rounded-full bg-ink/50 px-4 py-2 text-cream backdrop-blur-sm transition-colors hover:bg-ink/70 max-sm:left-4 max-sm:top-4"
       >
         ← Home
       </Link>
 
-      <div className="absolute right-4 top-4 z-20 flex w-44 flex-col items-stretch gap-3 rounded-2xl bg-black/50 p-3 backdrop-blur-sm sm:right-6 sm:top-6 sm:w-52">
+      <div className="absolute right-6 top-6 z-20 flex w-52 flex-col items-stretch gap-3 rounded-2xl bg-ink/50 p-3 backdrop-blur-sm max-sm:right-4 max-sm:top-4 max-sm:w-44">
         <div className="flex flex-col items-center text-center">
-          <HandSealDiagram className="h-14 w-14 sm:h-16 sm:w-16" />
-          <p className="text-2xl leading-none">
+          <HandSealDiagram className="h-16 w-16 max-sm:h-14 max-sm:w-14" />
+          <p className="h3 leading-none">
             <span role="img" aria-label="two fingers up">🤞</span>
-            <span className="mx-1 text-sm text-zinc-500">+</span>
+            <span className="p-sm mx-1 text-muted">+</span>
             <span role="img" aria-label="two fingers sideways" className="inline-block rotate-90">🤞</span>
           </p>
-          <p className="mt-1 text-xs font-semibold text-orange-300">Kage Bunshin</p>
-          <p className="text-[11px] text-zinc-400">Cross both hands at a right angle, a finger or two raised</p>
+          <p className="p-sm mt-1 text-chakra">Kage Bunshin</p>
+          <p className="p-sm text-muted">Cross both hands at a right angle, a finger or two raised</p>
         </div>
-        <div className="h-px bg-white/10" />
+        <div className="h-px bg-rule" />
         <div className="flex flex-col items-center text-center">
-          <p className="text-2xl leading-none">
+          <p className="h3 leading-none">
             <span role="img" aria-label="clenched fist">✊</span>
-            <span className="mx-1 text-sm text-zinc-500">→</span>
+            <span className="p-sm mx-1 text-muted">→</span>
             <span role="img" aria-label="open palm">🖐️</span>
           </p>
-          <p className="mt-1 text-xs font-semibold text-orange-300">Rasengan</p>
-          <p className="text-[11px] text-zinc-400">Fist, then open palm face-up</p>
+          <p className="p-sm mt-1 text-chakra">Rasengan</p>
+          <p className="p-sm text-muted">Fist, then open palm face-up</p>
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/50 to-transparent px-6 pb-8 pt-16 text-center sm:pb-10">
+      <div className="absolute inset-x-0 bottom-0 z-10 bg-linear-to-t from-ink/85 via-ink/50 to-transparent px-6 pb-10 pt-16 text-center max-sm:pb-8">
         <div className="mx-auto max-w-xl">
-          <div className="h-5 text-sm text-zinc-300">
+          <div className="p-md h-6 text-cream/80">
             {status === "idle" && "Preparing camera…"}
             {status === "requesting" && "Requesting camera access…"}
             {status === "loading-models" && "Loading hand-tracking model…"}
-            {status === "error" && <span className="text-red-400">{errorMessage}</span>}
+            {status === "error" && <span className="text-hanko-soft">{errorMessage}</span>}
             {status === "ready" && "Camera ready"}
           </div>
-          <p className="mt-1 text-sm text-zinc-300 sm:text-base">
+          <p className="p-md mt-1 text-cream/80">
             Cross both hands at a right angle, with a finger or two raised on each
             (top right), for a shadow clone, or clench one fist and then open that
             palm face-up to channel a Rasengan above it.
